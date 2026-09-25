@@ -1,5 +1,16 @@
 # Reversible LLM Training & Benchmark
 
+> ## 📓 Start here: [`Reversible_Assignment.ipynb`](Reversible_Assignment.ipynb)
+> [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/jssunil/reversibletransformer/blob/main/Reversible_Assignment.ipynb)
+>
+> **One self-contained notebook with everything:** all the tested source code, the unit tests, integrator screening,
+> the three assignment runs (baseline / reversible same batch / reversible max batch), the report with plots, and the
+> results and findings. Open it in Colab (Runtime → Change runtime type → GPU → Run all) or run it locally on a CUDA GPU.
+>
+> **Headline result:** reversibility cut peak memory **64%** (3.22 → 1.16 GiB) with the same loss (1.890 vs 1.849),
+> allowed a **2.8×** larger batch, and cost **35%** throughput. Full write-up: [`REPORT.md`](REPORT.md) ·
+> plain-English guide: [`explainer.md`](explainer.md).
+
 Train a ~20M-param GPT for 50M tokens three ways (baseline / reversible same batch / reversible max batch)
 and measure loss, tokens/s and peak memory. See `REPORT.md` for results and findings.
 See `explainer.md` for a plain-English walkthrough; its §9 compares reversible training with how frontier labs handle
