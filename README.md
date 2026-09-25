@@ -1,4 +1,4 @@
-# ERA V5 Session 13 — Reversible LLM assignment
+# Reversible LLM Training & Benchmark
 
 Train a ~20M-param GPT for 50M tokens three ways (baseline / reversible same batch / reversible max batch)
 and measure loss, tokens/s and peak memory. See `REPORT.md` for results and findings.
@@ -55,8 +55,9 @@ drive.mount("/content/drive")
 ZIP = "/content/drive/MyDrive/colab_bundle.zip"
 if not os.path.exists(ZIP):
     ZIP = "/content/" + list(files.upload().keys())[0]
-!unzip -o -q "$ZIP" -d /content/era13
-%cd /content/era13
+!unzip -o -q "$ZIP" -d /content/revtransformer
+%cd /content/revtransformer
+
 !ls data
 ```
 

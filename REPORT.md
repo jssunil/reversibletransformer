@@ -1,6 +1,6 @@
-# ERA V5 Session 13 — Reversible LLM training: report
+# Reversible LLM Training: Report
 
-**Task (study guide §10):** train a ~20M-parameter LLM for 50M tokens three ways — (1) baseline at a fixed batch,
+**Task:** train a ~20M-parameter LLM for 50M tokens three ways — (1) baseline at a fixed batch,
 (2) reversible at the same batch, (3) reversible at the largest batch the freed memory allows — and report
 final loss, tokens/s, peak memory and findings.
 

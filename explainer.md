@@ -710,4 +710,4 @@ Because large-batch runs performed 15x to 23x fewer optimizer steps, the model w
 | **When should you use Reversible Transformers?** | When activation memory is your bottleneck: large batch training, long context sequences, deep networks on single GPUs, or memory-limited edge accelerators. |
 
 ---
-*Created as part of the ERA V5 Distributed Training & Reversible LLM Series.*
+*Reversible Transformer & Distributed Training Architecture Guide.*
