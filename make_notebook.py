@@ -29,7 +29,7 @@ if "† Run 3b" in report:
 
 cells = [
     md("""
-# ERA V5 — Session 13 Assignment: Reversible LLM training
+# Reversible LLM training
 
 **Task (study guide §10):** train a ~20M-parameter LLM for 50M tokens, three runs:
 1. **Baseline** — standard residual transformer at a fixed batch (32 × 512).
