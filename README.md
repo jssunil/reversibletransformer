@@ -2,6 +2,8 @@
 
 Train a ~20M-param GPT for 50M tokens three ways (baseline / reversible same batch / reversible max batch)
 and measure loss, tokens/s and peak memory. See `REPORT.md` for results and findings.
+See `explainer.md` for a plain-English walkthrough; its §9 compares reversible training with how frontier labs handle
+activation memory (checkpointing, TP/SP/PP/CP) and explains where this approach wins.
 
 ## Files
 | File | Purpose |
@@ -15,6 +17,7 @@ and measure loss, tokens/s and peak memory. See `REPORT.md` for results and find
 | `run_all.sh` | `screen` (integrator screening, 5M tok) and `main` (the assignment runs) |
 | `make_report.py` | Tables + plots → `REPORT_results.md`, `results/plots/` |
 | `colab_summary.py` | Colab: writes `REPORT_colab.md`; locally: merges Colab results into `REPORT.md` §6 |
+| `Reversible_Assignment.ipynb` | **Assignment notebook**: all tested code embedded (`%%writefile`), tests, screening, Runs 1/2/3, report, results + findings |
 | `colab_run3b.ipynb` | Colab notebook doing the whole Run 3b flow (alternative to pasting cells) |
 | `colab_bundle.zip` | Code + tokenizer + `train.bin`/`val.bin` for Colab (same data as the local runs) |
 
@@ -47,7 +50,7 @@ In Colab: New notebook → Runtime → Change runtime type → **T4 GPU** → Sa
 ```python
 import os, json, torch
 assert torch.cuda.is_available(), "No GPU: Runtime > Change runtime type > T4 GPU"
-DT = "bf16" if torch.cuda.is_bf16_supported() else "fp16"
+DT = "bf16" if torch.cuda.get_device_capability()[0] >= 8 else "fp16"
 print(torch.cuda.get_device_name(), "| dtype:", DT)
 
 from google.colab import drive, files

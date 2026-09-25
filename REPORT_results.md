@@ -24,6 +24,7 @@
 | Run 2 reversible, same batch | reveuler_rev | 0.5 | fp64 | 32 | 3052 | 1.804 | 1.890 | 156,838 | 156,965 | 1.16 | 0.0e+00 | GeForce RTX 5070 Ti |
 | Run 3 reversible, max batch | reveuler_rev | 0.5 | fp64 | 432 | 227 | 4.760 | 3.970 | 158,143 | 158,349 | 10.51 | 0.0e+00 | GeForce RTX 5070 Ti |
 | Run 1b baseline, max batch | residual | — | fp32 | 152 | 643 | 3.768 | 3.442 | 247,486 | 247,824 | 11.35 | — | GeForce RTX 5070 Ti |
+| Run 3b reversible, max batch, fp32 stream | reveuler_rev | 0.5 | fp32 | 704 | 139 | 5.235 | 4.497 | 43,962 | 43,834 | 10.18 | 2.2e+00 | Tesla T4 |
 
 ![loss](results/plots/main_loss.png)
 

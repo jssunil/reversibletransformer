@@ -115,6 +115,7 @@ def train(args):
     ema, diverged, warm_t, warm_step = None, False, None, 20
     torch.cuda.synchronize()
     t0 = t_log = time.perf_counter()
+    step_log = 0
     for step in range(steps):
         for g in opt.param_groups:
             g["lr"] = lr_at(step, steps, lr, args.warmup)
@@ -139,8 +140,8 @@ def train(args):
                 break
             ema = li if ema is None else 0.9 * ema + 0.1 * li
             now = time.perf_counter()
-            tps = args.log_every * tok_per_step / (now - t_log)
-            t_log = now
+            tps = (step + 1 - step_log) * tok_per_step / (now - t_log)  # last window may be < log_every steps
+            t_log, step_log = now, step + 1
             log.writerow([step + 1, (step + 1) * tok_per_step, f"{li:.4f}", f"{opt.param_groups[0]['lr']:.3e}",
                           f"{tps:.0f}", f"{now - t0:.1f}"])
             if (step + 1) % (args.log_every * 8) == 0 or step == steps - 1:

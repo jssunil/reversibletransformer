@@ -12,8 +12,10 @@ final loss, tokens/s, peak memory and findings.
 | **Run 2** reversible, same batch | rev. Euler, h=0.5 | 32 | 3,052 | 1.804 | **1.890** | **156,965** | **1.16 GiB** |
 | **Run 3** reversible, max batch | rev. Euler, h=0.5 | 432 | 227 | 4.760 | **3.970** | **158,349** | **10.51 GiB** |
 | Run 1b (extra) baseline, max batch | — | 152 | 643 | 3.768 | 3.442 | 247,824 | 11.35 GiB |
+| Run 3b (extra) reversible, max batch, **fp32 stream**, Colab T4 fp16 † | rev. Euler, h=0.5 | 704 | 139 | 5.235 | 4.497 | 43,834 † | 10.18 GiB |
 
 All runs: 50.0M tokens, seq 512, bf16 autocast, AdamW, one RTX 5070 Ti (16 GB).
+† Run 3b ran on a Tesla T4 with fp16 compute; its tokens/s is not comparable with the other rows, and its gradients are approximate (reconstruction error 2.24, §6).
 Tokens/s is steady-state (first 20 steps excluded). Peak memory is `torch.cuda.max_memory_allocated()`.
 
 > **Interpretation.** Reversibility cut peak memory by **64%** (3.22 → 1.16 GiB) and cost **35%** throughput at equal
@@ -129,8 +131,7 @@ memory (11.7 GiB) and Runs 3/1b were re-run: batch 432 and 152, with normal spee
 | Run 3b, fp32 stream | 744 | 187,346 | 4.680 (recon. error 45 → gradients unreliable) |
 
 <!-- COLAB_NOTE:START -->
-The planned re-run of Run 3b (fp32 stream at its safe max batch of 640) was **stopped by request** after a machine
-warning and has no final result. The max-batch probe alone shows the fp32 stream fits **640** vs 432 for fp64.
+Run 3b was re-run on Google Colab (Tesla T4); results are in §6.
 <!-- COLAB_NOTE:END -->
 
 ## 5. Conclusion
@@ -140,11 +141,41 @@ with an fp32 stream, at the cost of exact gradients). For a 20M model on a 16 GB
 baseline is compute-bound and fits comfortably, and the extra batch that reversibility unlocks neither speeds up
 training nor helps loss under a 50M-token budget. The technique earns its keep when activations, not compute, are the
 binding constraint: long context, deep models, or GPUs too small to hold an efficient batch.
+The residual stream must be fp64 for this to be exact: Run 3b (fp32 stream, Colab T4) fit a larger batch but ended with
+reconstruction error 2.24 and a worse loss, so the cheaper stream is not a free lunch.
 
 <!-- COLAB_SECTION:START -->
-## 6. Run 3b on Google Colab
-*Pending: run `colab_run3b.ipynb` in Colab, then locally `python colab_summary.py --update REPORT.md`.*
+## 6. Run 3b on Google Colab (reversible, max batch, fp32 residual stream)
+
+Run on **Tesla T4** with **fp16** autocast, using the same tokenizer and token files as the local runs (`colab_bundle.zip`), so loss is comparable across machines. Tokens/s is comparable only between rows on the same GPU.
+
+| run | GPU | dtype | stream | batch | steps | final train loss | val loss | tokens/s (steady) | peak mem (GiB) | recon err |
+|---|---|---|---|---|---|---|---|---|---|---|
+| run3b_rev_max_fp32stream | Tesla T4 | fp16 | fp32 | 704 | 139 | 5.235 | 4.497 | 43,834 | 10.18 | 2.2e+00 |
+
+Max-batch probes on this GPU: reveuler_rev stream fp32 → **704** (budget 12.9 GiB)
+
+**Findings (auto-generated from the numbers above):**
+
+- fp32-stream reconstruction error at the end of training: **2.24e+00** → reconstruction is **unreliable** (gradients only approximate).
+- Local Run 3 (fp64 stream, NVIDIA GeForce RTX 5070 Ti, batch 432): val loss 3.970; Colab Run 3b val loss 4.497 at batch 704 (139 steps). Both are limited mainly by the small number of optimizer steps under the fixed 50M-token budget.
 <!-- COLAB_SECTION:END -->
+
+**Interpretation (Run 3b).**
+- **It trained without diverging**, but the fp32-stream reconstruction error at the end was **2.24**, measured relative to the
+  (small) input embedding x₀. The reversed states no longer match the forward ones well, so **the gradients were only
+  approximate**. The discarded near-full-VRAM local attempt at batch 744 showed the same, worse (45). With the fp64 stream
+  (Runs 2 and 3) the error is exactly 0.
+- **Val loss 4.497 vs 3.970 for Run 3.** Two causes add up and can't be separated cleanly here: fewer optimizer steps
+  (139 vs 227 under the same 50M tokens) and approximate gradients. The local runs show loss rising steeply as steps
+  shrink (643 steps → 3.442, 227 → 3.970), so part of the gap is the step count.
+- **What the fp32 stream buys:** a bigger max batch (704 on the T4 with a 12.9 GiB budget, against 432 for fp64 locally
+  with 11.7 GiB) and ~25% more speed at equal batch locally (195K vs 157K tok/s). **What it costs:** exact gradients.
+  **Recommendation: use the fp64 stream**; the fp32 stream is a speed/memory shortcut that gives up correctness.
+- Precision note: Colab used **fp16** block compute (a T4 has no native bf16) against bf16 locally, with loss scaling.
+  That shifts loss slightly but not the conclusions. The T4's 43.8K tok/s isn't comparable with the RTX 5070 Ti runs.
+  (The final progress line printed 77,788 tok/s because of a logging bug in the last, shorter window, now fixed in
+  `train.py`; the JSON value of 43,834 is correct.)
 
 ## Reproduce
 ```bash

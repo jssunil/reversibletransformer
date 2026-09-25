@@ -1,0 +1,23 @@
+{
+  "name": "run3b_rev_max_fp32stream",
+  "trunk": "reveuler_rev",
+  "h": 0.5,
+  "stream": "fp32",
+  "batch": 704,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.002,
+  "steps": 139,
+  "tokens": 50102272,
+  "final_train_loss": 5.235049583830833,
+  "val_loss": 4.496790549794182,
+  "diverged": false,
+  "tokens_per_s": 43962.352856844336,
+  "tokens_per_s_steady": 43834.38797123965,
+  "wall_s": 1139.6631150100002,
+  "peak_mem_gib": 10.176378726959229,
+  "peak_reserved_gib": 12.763671875,
+  "recon_error": 2.236325979232788,
+  "gpu": "Tesla T4",
+  "dtype": "fp16"
+}

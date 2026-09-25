@@ -24,6 +24,8 @@ This document provides a comprehensive, accessible explanation of every componen
    - [7.2 Main 50M Token Benchmarks](#72-main-50m-token-benchmarks)
    - [7.3 Headline Numbers & Takeaways](#73-headline-numbers--takeaways)
 8. [Summary Cheatsheet](#8-summary-cheatsheet)
+9. [Reversible Training vs. Frontier Practice](#9-reversible-training-vs-frontier-practice-whats-different-and-why-it-matters)
+10. [So What Is the Advantage? (Memory, Not Speed)](#10-so-what-is-the-advantage-memory-not-speed)
 
 ---
 
@@ -708,6 +710,125 @@ Because large-batch runs performed 15x to 23x fewer optimizer steps, the model w
 | **Which integrator worked best?** | Two-stream Symplectic Euler (`reveuler_rev`) with step size $h=0.5$. |
 | **Why FP64 stream?** | Prevents $(a+b)-b \neq a$ floating point rounding drift across deep layers. |
 | **When should you use Reversible Transformers?** | When activation memory is your bottleneck: large batch training, long context sequences, deep networks on single GPUs, or memory-limited edge accelerators. |
+
+## 9. Reversible Training vs. Frontier Practice: What's Different, and Why It Matters
+
+**In short:** frontier LLM training manages activation memory by **splitting it across GPUs** (tensor, sequence,
+pipeline and context parallelism) and **recomputing part of it** (activation checkpointing). A reversible network
+takes a different route: it **doesn't store activations at all**, and rebuilds them in the backward pass by
+running each layer's update in reverse.
+
+### 9.1 How frontier training handles activations
+
+| Technique | Used by | Activation memory | Extra compute |
+|---|---|---|---|
+| Store everything | small models | O(layers × tokens) | 0 |
+| Selective recompute (recompute only attention internals) | Megatron default, Llama 3 | much smaller, still O(layers) | ~2–5% |
+| Full activation checkpointing (store only each layer's input) | memory-tight runs | O(layers) boundary tensors + 1 layer | ~33% |
+| TP + SP / PP / CP (study guide §4) | all frontier runs | ÷ (TP × PP × CP) | little compute; more GPUs and communication |
+| **Reversible (this project)** | research: RevNet 2017, Reformer 2020, Gal et al. 2025 | **one layer + final state: O(1) in depth** | ~33% theory (35% measured) |
+
+The closest frontier technique is **full activation checkpointing**. Both pay about one extra forward pass.
+The difference is that checkpointing still stores **one tensor per layer**, while reversibility stores **none**:
+it recovers them by inverting the update rule
+(`x_{l-1} = x_{l+1} − 2h·f(x_l)` for midpoint, `z = z' − h·MLP(y')`, `y = y' − h·Attn(z)` for reversible Euler).
+
+### 9.2 What makes it different
+
+1. **Activation memory doesn't grow with depth.** For the study guide's 30B model (96 layers, one 8K sequence),
+   full checkpointing still keeps 96 layer inputs, about 8 GB per sequence in bf16. Reversibility drops that to a single
+   state. `test_memory_flat_in_depth` checks this: memory stays flat from 4 to 16 layers.
+2. **It saves memory without extra GPUs or communication.** TP, CP and PP save memory by adding GPUs and interconnect
+   traffic. Reversibility saves it on a single GPU with no communication. The guide's §9.1 example: at 131K tokens, a
+   job needing 4 nodes with CP=2 fits on 1 node, at about 40% more compute.
+3. **It works alongside every parallelism axis.** It is a change inside each layer, so it combines with TP, SP, PP, CP
+   and ZeRO. It helps pipeline parallelism especially: 1F1B keeps up to *p* micro-batches of activations in flight,
+   and reversibility shrinks each one to almost nothing.
+
+### 9.3 What this implementation adds
+
+The reversible Euler coupling itself is not new; it is essentially the RevNet/Reformer reversible layer. The midpoint
+(leapfrog) rule follows Gal et al. (2025). What this implementation contributes is engineering rigour:
+
+- **Exact gradients, and proven.** A float64 residual stream makes reconstruction exactly zero-error, while the blocks
+  still compute in bf16. `tests/test_reversible.py` confirms loss and every parameter gradient match ordinary autograd.
+  Earlier reversible models accepted reconstruction drift. Here, an fp32 stream gave **5.9% gradient error** for
+  reversible Euler with h=1.0, and the fp64 stream removed it (REPORT.md §4.1).
+- **Fair measurement.** The loss is chunked and checkpointed for every run, so memory is fully attributable to the trunk.
+  The max-batch probe keeps a VRAM safety margin. There is a stored-activation midpoint control and a same-GPU reference run.
+- **Pitfalls documented:** calling `backward()` inside autocast breaks the recomputation, VRAM spills to host RAM on
+  Windows near capacity, and dropout is incompatible with recomputation.
+
+### 9.4 Why frontier labs mostly don't use it
+
+- **They're compute-bound.** At ~40% MFU on thousands of GPUs, a 33% compute cost is enormous. Selective recompute
+  costs about 3%, and TP/PP/CP already make activations fit. This project saw the same thing: at 21M params the GPU
+  was compute-bound, so reversibility was a tax (REPORT.md §3).
+- **It changes the architecture.** Existing pretrained weights don't directly fit a reversible network. Gal et al.
+  propose a fine-tuning step to convert a model, and the midpoint variant learned noticeably more slowly in this project.
+- **Numerical fragility.** Without an exact stream, reconstruction drifts. In MoE models it could even flip which
+  expert a token is routed to during the recomputation. Anything random (dropout) or data-dependent needs care.
+
+### 9.5 Where it would win
+
+It pays off when **memory, not compute, is the limit**:
+- very long context, where activations grow with tokens and context parallelism would otherwise need more GPUs;
+- very deep models;
+- fine-tuning large models on small or few GPUs;
+- pipeline-parallel setups where in-flight activations cap the micro-batch count.
+
+### 9.6 Bottom line
+
+**The selling point is O(1)-in-depth activation memory, bought with compute instead of hardware.** Frontier labs buy
+memory with GPUs and communication. Reversibility buys it with about one extra forward pass, which is a good trade
+exactly when you can't simply add GPUs.
+
+## 10. So What Is the Advantage? (Memory, Not Speed)
+
+Reversibility gives you **memory, not speed**. In these runs its advantage is entirely that it uses far less GPU memory
+for the same learning. Whether that's worth anything depends on whether memory is what's stopping you.
+
+### 10.1 What it gave (measured)
+
+| | Baseline | Reversible | |
+|---|---|---|---|
+| Peak memory, same batch | 3.22 GiB | **1.16 GiB** | **−64%** |
+| Val loss after 50M tokens | 1.849 | 1.890 | ≈ same (+2%) |
+| Largest batch on the same GPU | 152 | **432** | **2.8×** |
+| Activation memory as layers are added | grows with every layer | **stays flat** | tested from 4 to 16 layers |
+| Speed | 243K tok/s | 157K tok/s | **−35% (the cost)** |
+
+It learns the same thing in about a third of the memory. That's the advantage. The price is roughly one extra forward
+pass per layer.
+
+### 10.2 Why it didn't help these runs overall
+
+The 21M model already fits easily and already keeps the GPU fully busy at batch 32, so the freed memory had nothing
+useful to do:
+- a bigger batch didn't make training faster, because the GPU was already saturated;
+- with a fixed 50M-token budget, a bigger batch just meant fewer optimizer steps and a worse loss.
+
+So here it's a 35% tax. **That's a finding, not a failure:** reversibility only pays off when memory is the bottleneck.
+
+### 10.3 Where it becomes a real advantage
+
+These are estimates scaled from the measured numbers, not runs:
+
+1. **Longer context.** The baseline's ~2 GiB of activations at 512 tokens grows linearly with context. At **8K tokens**
+   that's about 32 GiB, which won't fit a 16 GB GPU. The reversible version keeps only one layer plus the saved states,
+   so it would plausibly still fit.
+2. **Deeper models.** Baseline activation memory grows with every layer; at **100 layers** it's about 20 GiB and no
+   longer fits. Reversible stays roughly flat, so a much deeper model can train on the same card.
+3. **Fewer GPUs.** At scale, the usual way to fit activations is to spread them across more GPUs, with context or
+   pipeline parallelism. The study guide's example: 131K-token context on **1 node instead of 4**, for ~40% more
+   compute. Trading 40% more compute for 4× fewer GPUs is a big saving.
+4. **Fine-tuning on limited hardware.** When bigger GPUs aren't available, cutting activation memory by two-thirds can
+   decide whether the job runs at all.
+
+### 10.4 In one line
+
+**Reversibility turns "this doesn't fit on my GPU" into "this fits, but runs ~35% slower."** If a job already fits, as
+it did here, it's a cost. If it doesn't fit, it's the difference between needing more hardware and not.
 
 ---
 *Reversible Transformer & Distributed Training Architecture Guide.*
