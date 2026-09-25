@@ -1,0 +1,23 @@
+{
+  "name": "midpoint_h0.25",
+  "trunk": "midpoint_rev",
+  "h": 0.25,
+  "stream": "fp64",
+  "batch": 32,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 306,
+  "tokens": 5013504,
+  "final_train_loss": 4.7595221384516355,
+  "val_loss": 4.132108578916456,
+  "diverged": false,
+  "tokens_per_s": 158092.77532548242,
+  "tokens_per_s_steady": 159535.51916488603,
+  "wall_s": 31.7124169000017,
+  "peak_mem_gib": 1.3753504753112793,
+  "peak_reserved_gib": 1.65625,
+  "recon_error": 0.0,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

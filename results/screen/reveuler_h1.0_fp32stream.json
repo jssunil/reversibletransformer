@@ -1,0 +1,23 @@
+{
+  "name": "reveuler_h1.0_fp32stream",
+  "trunk": "reveuler_rev",
+  "h": 1.0,
+  "stream": "fp32",
+  "batch": 32,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 306,
+  "tokens": 5013504,
+  "final_train_loss": 4.523476414708944,
+  "val_loss": 3.920343672642942,
+  "diverged": false,
+  "tokens_per_s": 193188.0264596034,
+  "tokens_per_s_steady": 195177.86761457514,
+  "wall_s": 25.951421999998274,
+  "peak_mem_gib": 1.1146693229675293,
+  "peak_reserved_gib": 1.2578125,
+  "recon_error": 0.833129346370697,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

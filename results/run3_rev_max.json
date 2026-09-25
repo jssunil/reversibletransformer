@@ -1,0 +1,23 @@
+{
+  "name": "run3_rev_max",
+  "trunk": "reveuler_rev",
+  "h": 0.5,
+  "stream": "fp64",
+  "batch": 432,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.002,
+  "steps": 227,
+  "tokens": 50208768,
+  "final_train_loss": 4.760150305942428,
+  "val_loss": 3.9700395943688567,
+  "diverged": false,
+  "tokens_per_s": 158142.6938744137,
+  "tokens_per_s_steady": 158348.97911447284,
+  "wall_s": 317.4902790000051,
+  "peak_mem_gib": 10.506577491760254,
+  "peak_reserved_gib": 11.68359375,
+  "recon_error": 0.0,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

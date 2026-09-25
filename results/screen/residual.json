@@ -1,0 +1,23 @@
+{
+  "name": "residual",
+  "trunk": "residual",
+  "h": 0.5,
+  "stream": "fp32",
+  "batch": 32,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 306,
+  "tokens": 5013504,
+  "final_train_loss": 4.292903566330554,
+  "val_loss": 3.6244561711295704,
+  "diverged": false,
+  "tokens_per_s": 241361.4827628061,
+  "tokens_per_s_steady": 244633.0282435923,
+  "wall_s": 20.771764999997686,
+  "peak_mem_gib": 3.2192225456237793,
+  "peak_reserved_gib": 3.46484375,
+  "recon_error": null,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

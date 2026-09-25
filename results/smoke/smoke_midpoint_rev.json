@@ -1,0 +1,22 @@
+{
+  "name": "smoke_midpoint_rev",
+  "trunk": "midpoint_rev",
+  "h": 0.5,
+  "batch": 32,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 98,
+  "tokens": 1605632,
+  "final_train_loss": 5.838796382904053,
+  "val_loss": 5.653202932389056,
+  "diverged": false,
+  "tokens_per_s": 205109.05015410078,
+  "tokens_per_s_steady": 211962.06923998412,
+  "wall_s": 7.828187000006437,
+  "peak_mem_gib": 2.03501558303833,
+  "peak_reserved_gib": 2.35546875,
+  "recon_error": 0.1883983314037323,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

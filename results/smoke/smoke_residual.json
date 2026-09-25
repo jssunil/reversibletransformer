@@ -1,0 +1,22 @@
+{
+  "name": "smoke_residual",
+  "trunk": "residual",
+  "h": 0.5,
+  "batch": 32,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 98,
+  "tokens": 1605632,
+  "final_train_loss": 5.691202217102051,
+  "val_loss": 5.6379671643991935,
+  "diverged": false,
+  "tokens_per_s": 251794.07544220603,
+  "tokens_per_s_steady": 263905.9552533233,
+  "wall_s": 6.376766400004271,
+  "peak_mem_gib": 3.94572114944458,
+  "peak_reserved_gib": 4.08984375,
+  "recon_error": null,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

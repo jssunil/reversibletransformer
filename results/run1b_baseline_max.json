@@ -1,0 +1,23 @@
+{
+  "name": "run1b_baseline_max",
+  "trunk": "residual",
+  "h": 0.5,
+  "stream": "fp32",
+  "batch": 152,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.002,
+  "steps": 643,
+  "tokens": 50040832,
+  "final_train_loss": 3.7683222660730125,
+  "val_loss": 3.4421835023848737,
+  "diverged": false,
+  "tokens_per_s": 247485.85077454319,
+  "tokens_per_s_steady": 247823.8717183505,
+  "wall_s": 202.19673909999256,
+  "peak_mem_gib": 11.346879005432129,
+  "peak_reserved_gib": 11.5,
+  "recon_error": null,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

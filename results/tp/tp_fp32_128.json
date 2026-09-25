@@ -1,0 +1,23 @@
+{
+  "name": "tp_fp32_128",
+  "trunk": "reveuler_rev",
+  "h": 0.5,
+  "stream": "fp32",
+  "batch": 128,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 40,
+  "tokens": 2621440,
+  "final_train_loss": 5.972388691425324,
+  "val_loss": 5.703478578661309,
+  "diverged": false,
+  "tokens_per_s": 193773.86013070433,
+  "tokens_per_s_steady": 197386.93622341868,
+  "wall_s": 13.528346899998724,
+  "peak_mem_gib": 2.1562976837158203,
+  "peak_reserved_gib": 2.490234375,
+  "recon_error": 0.5388672351837158,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

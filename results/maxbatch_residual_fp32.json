@@ -1,0 +1,8 @@
+{
+  "trunk": "residual",
+  "stream": "fp32",
+  "h": 0.5,
+  "seq": 512,
+  "max_batch": 152,
+  "budget_gib": 11.74765625
+}

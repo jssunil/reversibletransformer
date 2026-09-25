@@ -1,0 +1,22 @@
+{
+  "name": "smoke_reveuler_rev",
+  "trunk": "reveuler_rev",
+  "h": 1.0,
+  "batch": 32,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 98,
+  "tokens": 1605632,
+  "final_train_loss": 5.6590427575111395,
+  "val_loss": 5.220704250648374,
+  "diverged": false,
+  "tokens_per_s": 199221.76763628493,
+  "tokens_per_s_steady": 205641.46576398812,
+  "wall_s": 8.059520900002099,
+  "peak_mem_gib": 1.84244966506958,
+  "peak_reserved_gib": 2.1328125,
+  "recon_error": 8.803366661071777,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}

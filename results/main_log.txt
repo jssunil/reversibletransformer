@@ -1,0 +1,199 @@
+  batch 32: fits
+  batch 64: fits
+  batch 128: fits
+  batch 256: does not fit
+  batch 192: does not fit
+  batch 160: fits
+  batch 176: fits
+  batch 184: does not fit
+max batch for residual (stream=fp32): 176  (budget 13.5 GiB)
+  batch 64: fits
+  batch 128: fits
+  batch 256: fits
+  batch 512: does not fit
+  batch 384: fits
+  batch 448: fits
+  batch 480: fits
+  batch 496: fits
+  batch 504: does not fit
+max batch for reveuler_rev (stream=fp64): 496  (budget 13.5 GiB)
+[run1_baseline] trunk=residual h=0.5 stream=fp32 params=21.05M batch=32x512 steps=3052 lr=1.00e-03
+  step 200/3052 loss 3.4399 ema 4.8696 tok/s 244,359 mem 3.22GiB
+  step 400/3052 loss 2.7858 ema 3.8547 tok/s 242,864 mem 3.22GiB
+  step 600/3052 loss 2.4592 ema 3.1595 tok/s 239,968 mem 3.22GiB
+  step 800/3052 loss 2.3276 ema 2.7533 tok/s 241,217 mem 3.22GiB
+  step 1000/3052 loss 2.2700 ema 2.5037 tok/s 241,965 mem 3.22GiB
+  step 1200/3052 loss 2.0640 ema 2.3179 tok/s 241,222 mem 3.22GiB
+  step 1400/3052 loss 2.0577 ema 2.1909 tok/s 241,847 mem 3.22GiB
+  step 1600/3052 loss 1.9223 ema 2.0948 tok/s 240,895 mem 3.22GiB
+  step 1800/3052 loss 1.9720 ema 2.0338 tok/s 246,560 mem 3.22GiB
+  step 2000/3052 loss 1.9332 ema 1.9889 tok/s 242,594 mem 3.22GiB
+  step 2200/3052 loss 1.7543 ema 1.9032 tok/s 244,681 mem 3.22GiB
+  step 2400/3052 loss 1.8863 ema 1.8715 tok/s 243,122 mem 3.22GiB
+  step 2600/3052 loss 1.7244 ema 1.8168 tok/s 243,974 mem 3.22GiB
+  step 2800/3052 loss 1.7362 ema 1.7838 tok/s 243,133 mem 3.22GiB
+  step 3000/3052 loss 1.7882 ema 1.7746 tok/s 246,290 mem 3.22GiB
+  step 3052/3052 loss 1.7217 ema 1.7608 tok/s 3,048,465 mem 3.22GiB
+{
+  "name": "run1_baseline",
+  "trunk": "residual",
+  "h": 0.5,
+  "stream": "fp32",
+  "batch": 32,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 3052,
+  "tokens": 50003968,
+  "final_train_loss": 1.760765968006241,
+  "val_loss": 1.8494657297603418,
+  "diverged": false,
+  "tokens_per_s": 242953.569918318,
+  "tokens_per_s_steady": 243277.51888924305,
+  "wall_s": 205.81697160001204,
+  "peak_mem_gib": 3.2192225456237793,
+  "peak_reserved_gib": 3.46484375,
+  "recon_error": null,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}
+[run2_rev_same] trunk=reveuler_rev h=0.5 stream=fp64 params=21.05M batch=32x512 steps=3052 lr=1.00e-03
+  step 200/3052 loss 3.4792 ema 4.9205 tok/s 158,137 mem 1.16GiB
+  step 400/3052 loss 2.7420 ema 3.8659 tok/s 156,981 mem 1.16GiB
+  step 600/3052 loss 2.4408 ema 3.1465 tok/s 156,601 mem 1.16GiB
+  step 800/3052 loss 2.3391 ema 2.7454 tok/s 157,301 mem 1.16GiB
+  step 1000/3052 loss 2.2846 ema 2.5100 tok/s 156,522 mem 1.16GiB
+  step 1200/3052 loss 2.0942 ema 2.3364 tok/s 157,791 mem 1.16GiB
+  step 1400/3052 loss 2.0849 ema 2.2157 tok/s 158,330 mem 1.16GiB
+  step 1600/3052 loss 1.9559 ema 2.1257 tok/s 157,004 mem 1.16GiB
+  step 1800/3052 loss 2.0164 ema 2.0687 tok/s 154,883 mem 1.16GiB
+  step 2000/3052 loss 1.9638 ema 2.0258 tok/s 158,128 mem 1.16GiB
+  step 2200/3052 loss 1.8013 ema 1.9433 tok/s 158,261 mem 1.16GiB
+  step 2400/3052 loss 1.9322 ema 1.9110 tok/s 157,583 mem 1.16GiB
+  step 2600/3052 loss 1.7587 ema 1.8579 tok/s 158,031 mem 1.16GiB
+  step 2800/3052 loss 1.7770 ema 1.8249 tok/s 156,266 mem 1.16GiB
+  step 3000/3052 loss 1.8350 ema 1.8176 tok/s 148,351 mem 1.16GiB
+  step 3052/3052 loss 1.7659 ema 1.8044 tok/s 1,966,041 mem 1.16GiB
+{
+  "name": "run2_rev_same",
+  "trunk": "reveuler_rev",
+  "h": 0.5,
+  "stream": "fp64",
+  "batch": 32,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.001,
+  "steps": 3052,
+  "tokens": 50003968,
+  "final_train_loss": 1.8044085075915248,
+  "val_loss": 1.8899000003689626,
+  "diverged": false,
+  "tokens_per_s": 156837.78047274513,
+  "tokens_per_s_steady": 156964.86131667066,
+  "wall_s": 318.82603699999163,
+  "peak_mem_gib": 1.1621546745300293,
+  "peak_reserved_gib": 1.8203125,
+  "recon_error": 0.0,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}
+[run3_rev_max] trunk=reveuler_rev h=0.5 stream=fp64 params=21.05M batch=496x512 steps=197 lr=2.00e-03
+  step 197/197 loss 4.0081 ema 4.8989 tok/s 99,887 mem 12.01GiB
+{
+  "name": "run3_rev_max",
+  "trunk": "reveuler_rev",
+  "h": 0.5,
+  "stream": "fp64",
+  "batch": 496,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.002,
+  "steps": 197,
+  "tokens": 50028544,
+  "final_train_loss": 4.898893556942796,
+  "val_loss": 4.047263950598045,
+  "diverged": false,
+  "tokens_per_s": 89776.34021916495,
+  "tokens_per_s_steady": 89715.40545861307,
+  "wall_s": 557.2575567000022,
+  "peak_mem_gib": 12.007126808166504,
+  "peak_reserved_gib": 13.392578125,
+  "recon_error": 0.0,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}
+[run1b_baseline_max] trunk=residual h=0.5 stream=fp32 params=21.05M batch=176x512 steps=555 lr=2.00e-03
+  step 200/555 loss 4.0316 ema 4.9682 tok/s 251,730 mem 12.95GiB
+  step 400/555 loss 3.5211 ema 4.2483 tok/s 251,467 mem 12.95GiB
+  step 555/555 loss 3.3834 ema 3.8208 tok/s 1,256,499 mem 12.95GiB
+{
+  "name": "run1b_baseline_max",
+  "trunk": "residual",
+  "h": 0.5,
+  "stream": "fp32",
+  "batch": 176,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.002,
+  "steps": 555,
+  "tokens": 50012160,
+  "final_train_loss": 3.820755567419616,
+  "val_loss": 3.4542573983552027,
+  "diverged": false,
+  "tokens_per_s": 250712.74188118943,
+  "tokens_per_s_steady": 251102.17513788596,
+  "wall_s": 199.4799292000098,
+  "peak_mem_gib": 12.949021339416504,
+  "peak_reserved_gib": 13.263671875,
+  "recon_error": null,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}
+  batch 64: fits
+  batch 128: fits
+  batch 256: fits
+  batch 512: fits
+  batch 1024: does not fit
+  batch 768: does not fit
+  batch 640: fits
+  batch 704: fits
+  batch 736: fits
+  batch 752: does not fit
+  batch 744: fits
+max batch for reveuler_rev (stream=fp32): 744  (budget 13.5 GiB)
+[run3b_rev_max_fp32stream] trunk=reveuler_rev h=0.5 stream=fp32 params=21.05M batch=744x512 steps=132 lr=2.00e-03
+  step 132/132 loss 4.6443 ema 5.3793 tok/s 660,471 mem 10.74GiB
+{
+  "name": "run3b_rev_max_fp32stream",
+  "trunk": "reveuler_rev",
+  "h": 0.5,
+  "stream": "fp32",
+  "batch": 744,
+  "seq": 512,
+  "params": 21053184,
+  "lr": 0.002,
+  "steps": 132,
+  "tokens": 50282496,
+  "final_train_loss": 5.3792976060104385,
+  "val_loss": 4.679633453244069,
+  "diverged": false,
+  "tokens_per_s": 187279.79472751953,
+  "tokens_per_s_steady": 187346.0822873171,
+  "wall_s": 268.4886325999978,
+  "peak_mem_gib": 10.736390113830566,
+  "peak_reserved_gib": 13.48828125,
+  "recon_error": 44.98630905151367,
+  "gpu": "NVIDIA GeForce RTX 5070 Ti",
+  "dtype": "bf16"
+}
+Traceback (most recent call last):
+  File "C:\sjk\erav5\disttraining2_pipelinepar\make_report.py", line 115, in <module>
+    main()
+    ~~~~^^
+  File "C:\sjk\erav5\disttraining2_pipelinepar\make_report.py", line 110, in main
+    open("REPORT_results.md", "w").write("\n".join(out) + "\n")
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\apps\python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 2311: character maps to <undefined>
